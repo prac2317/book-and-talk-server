@@ -14,9 +14,6 @@ public class Club {
     @Column(name = "club_id")
     private Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "host_id")
-    private Long id;
+
 
 }
