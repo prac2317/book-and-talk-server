@@ -1,16 +1,12 @@
 package com.talk.book.config;
 
 
-import com.talk.book.domain.Club;
 import com.talk.book.domain.Member;
-import com.talk.book.repository.ClubRepository;
 import com.talk.book.repository.MemberRepository;
+import com.talk.book.service.BookService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -18,6 +14,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private final MemberRepository memberRepository;
 //    private final ClubRepository clubRepository;
+    private final BookService bookService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -43,6 +40,9 @@ public class DataInitializer implements CommandLineRunner {
 //            club.setCreatedAt(LocalDateTime.now());
 //            clubRepository.save(club);
         }
+        bookService.getAladinList("BestSeller");
+        bookService.getAladinList("BlogBest");
+        bookService.getAladinList("ItemNewAll");
     }
 }
 
