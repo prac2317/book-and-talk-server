@@ -1,5 +1,6 @@
 package com.talk.book.dto;
 
+import com.talk.book.domain.BookCategory;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -9,6 +10,6 @@ import java.util.List;
 @Getter
 public class GetBookListResponse {
 
-    private int totalCount;
-    private List<AladinResponse> data;
+    private BookCategory category;
+    private List<BookSummary> data;
 }
