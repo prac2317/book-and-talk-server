@@ -21,7 +21,7 @@ public class Book {
 
     private String isbn13;
 
-    private BookType type;
+    private BookCategory category;
 
     private int rank;
 
