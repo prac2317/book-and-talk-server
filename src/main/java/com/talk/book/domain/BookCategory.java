@@ -1,5 +1,5 @@
 package com.talk.book.domain;
 
-public enum BookType {
+public enum BookCategory {
     Bestseller, BlogBest, ItemNewAll
 }
