@@ -23,20 +23,23 @@ public class Club {
     @Column(length = 20, nullable = false)
     private String isbn13;
 
+    @Column(length = 20, nullable = false)
+    private String bookTitle;
+
     @Column(length = 255, nullable = false)
     private String name;
 
-    @Column(length = 255, nullable = false)
-    private String location;
+//    @Column(length = 255, nullable = false)
+//    private String location;
 
     @Column(nullable = false)
     private int maxParticipants;
 
-    @Column(nullable = false)
-    private int currentParticipant = 0;
+//    @Column(nullable = false)
+//    private int currentParticipant = 0;
 
-    @Column(length = 20, nullable = false)
-    private String status;
+//    @Column(length = 20, nullable = false)
+//    private String status;
 
     @Column(nullable = false)
     private LocalDateTime startDate;
