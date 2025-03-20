@@ -17,6 +17,7 @@ public class MemberController {
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody SignupRequest request) {
+        System.out.println("1");
         memberService.signup(request.getEmail(), request.getNickname(), request.getPassword());
         return ResponseEntity.ok("회원가입 성공");
     }

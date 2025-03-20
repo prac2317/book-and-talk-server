@@ -25,4 +25,8 @@ public class Member {
 
     private String profileImageUrl;
 
+    @ManyToOne
+    @JoinColumn(name = "club_id")
+    private Club club;
+
 }

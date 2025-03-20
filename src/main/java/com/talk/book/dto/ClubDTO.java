@@ -10,16 +10,17 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClubRequest {
-    private String bookTitle;
+public class ClubDTO {
+    private Long clubId;
     private String name;
+    private String bookTitle;
     private int maxParticipants;
-    private String clubDescription;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
+    private int currentParticipant;
     private LocalDateTime startDate;
-
     private int duration;
+    private String status;
+    private String clubDescription;
     private String isbn13;
+    private LocalDateTime createdAt;
 }
 

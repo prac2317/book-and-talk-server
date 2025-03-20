@@ -1,15 +1,19 @@
 package com.talk.book.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "club")
 @Getter
 @Setter
+@Builder
 public class Club {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,11 +39,12 @@ public class Club {
     @Column(nullable = false)
     private int maxParticipants;
 
-//    @Column(nullable = false)
-//    private int currentParticipant = 0;
+    @Column(nullable = false)
+    @Builder.Default
+    private int currentParticipant = 1;
 
-//    @Column(length = 20, nullable = false)
-//    private String status;
+    @Column(length = 20, nullable = false)
+    private String status;
 
     @Column(nullable = false)
     private LocalDateTime startDate;
@@ -54,5 +59,10 @@ public class Club {
     private String clubImage;
 
     @Column(nullable = false, updatable = false)
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "club", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Member> participants = new ArrayList<>();
 }
+
