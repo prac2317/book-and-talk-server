@@ -16,7 +16,7 @@ public class ClubRequest {
     private int maxParticipants;
     private String clubDescription;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm", timezone = "UTC")
     private LocalDateTime startDate;
 
     private int duration;
