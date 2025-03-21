@@ -43,11 +43,11 @@ public class ClubService {
     public ClubResponseDTO getClubsByIsbn(String isbn13) {
         List<Club> clubs = clubRepository.findByIsbn13(isbn13);
 
-        List<ClubDTO> clubDTOs = clubs.stream()
-                .map(this::convertToDTO)
+        List<ClubListItemDTO> clubListItemDTOs = clubs.stream()
+                .map(this::convertToListItemDTO)
                 .collect(Collectors.toList());
 
-        return new ClubResponseDTO(clubDTOs.size(), clubDTOs);
+        return new ClubResponseDTO(clubListItemDTOs.size(), clubListItemDTOs);
     }
 
     public ClubDTO getClubDetailById(Long clubId) {
@@ -85,6 +85,18 @@ public class ClubService {
                 club.getClubDescription(),
                 club.getIsbn13(),
                 club.getCreatedAt()
+        );
+    }
+
+    public ClubListItemDTO convertToListItemDTO(Club club) {
+        return new ClubListItemDTO(
+                club.getId(),
+                club.getBookTitle(),
+                club.getName(),
+                club.getCurrentParticipant(),
+                club.getMaxParticipants(),
+                club.getStatus(),
+                club.getStartDate()
         );
     }
 

@@ -11,5 +11,5 @@ import java.util.List;
 @NoArgsConstructor
 public class ClubResponseDTO {
     private int totalCount;
-    private List<ClubDTO> data;
+    private List<ClubListItemDTO> data;
 }
