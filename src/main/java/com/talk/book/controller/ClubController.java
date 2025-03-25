@@ -12,9 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/v1/clubs")
 @RequiredArgsConstructor
@@ -48,10 +45,10 @@ public class ClubController {
         return ResponseEntity.ok(club);
     }
 
-    @GetMapping("/{clubId}/member")
-    public ResponseEntity<ParticipantListDTO> getClubParticipants(@PathVariable Long clubId) {
-        ParticipantListDTO participants = clubService.getClubParticipants(clubId);
-        return ResponseEntity.ok(participants);
+    @GetMapping("/{clubId}/members")
+    public ResponseEntity<MemberListDTO> getClubMembers(@PathVariable Long clubId) {
+        MemberListDTO members = clubService.getClubMembers(clubId);
+        return ResponseEntity.ok(members);
     }
 
     @DeleteMapping("/{clubId}")

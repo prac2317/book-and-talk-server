@@ -1,11 +1,11 @@
 package com.talk.book.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
-public class ParticipantDTO {
+public class MemberDTO {
     private boolean isHost;
     private Long memberId;
     private String nickname;

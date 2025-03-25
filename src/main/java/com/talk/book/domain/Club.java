@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -62,7 +60,5 @@ public class Club {
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "club", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Member> participants = new ArrayList<>();
 }
 

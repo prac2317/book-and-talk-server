@@ -2,8 +2,10 @@ package com.talk.book.service;
 
 import com.talk.book.domain.Club;
 import com.talk.book.domain.Member;
+import com.talk.book.domain.MemberClub;
 import com.talk.book.dto.*;
 import com.talk.book.repository.ClubRepository;
+import com.talk.book.repository.MemberClubRepository;
 import com.talk.book.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,10 +19,15 @@ import java.util.stream.Collectors;
 public class ClubService {
     private final ClubRepository clubRepository;
     private final MemberRepository memberRepository;
+    private final MemberClubRepository memberClubRepository;
 
     public Club createClub(ClubRequest request, Long hostId) {
         Member host = memberRepository.findById(hostId)
                 .orElseThrow(() -> new IllegalArgumentException("호스트를 찾을 수 없습니다."));
+
+        if (request.getMaxParticipants() < 1) {
+            throw new IllegalArgumentException("최대 참가자는 1명 이상이어야 합니다.");
+        }
 
         Club club = Club.builder()
                 .host(host)
@@ -37,7 +44,30 @@ public class ClubService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        return clubRepository.save(club);
+        Club savedClub = clubRepository.save(club);
+
+        MemberClub memberClub = new MemberClub();
+        memberClub.setMember(host);
+        memberClub.setClub(savedClub);
+        memberClub.setHost(true);
+        memberClubRepository.save(memberClub);
+
+        return savedClub;
+    }
+
+
+    public MemberListDTO getClubMembers(Long clubId) {
+        List<MemberClub> members = memberClubRepository.findByClubId(clubId);
+
+        List<MemberDTO> memberDTOs = members.stream()
+                .map(memberClub -> new MemberDTO(
+                        memberClub.isHost(),
+                        memberClub.getMember().getId(),
+                        memberClub.getMember().getNickname()
+                ))
+                .collect(Collectors.toList());
+
+        return new MemberListDTO(memberDTOs);
     }
 
     public ClubResponseDTO getClubsByIsbn(String isbn13) {
@@ -55,21 +85,6 @@ public class ClubService {
                 .orElseThrow(() -> new IllegalArgumentException("클럽을 찾을 수 없습니다."));
 
         return convertToDTO(club);
-    }
-
-    public ParticipantListDTO getClubParticipants(Long clubId) {
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new IllegalArgumentException("클럽을 찾을 수 없습니다."));
-
-        List<ParticipantDTO> participants = club.getParticipants().stream()
-                .map(member -> new ParticipantDTO(
-                        club.getHost().getId().equals(member.getId()),
-                        member.getId(),
-                        member.getNickname()
-                ))
-                .collect(Collectors.toList());
-
-        return new ParticipantListDTO(participants);
     }
 
     public ClubDTO convertToDTO(Club club) {
