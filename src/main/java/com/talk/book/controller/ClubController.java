@@ -7,6 +7,7 @@ import com.talk.book.dto.*;
 import com.talk.book.service.ClubService;
 import com.talk.book.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,16 @@ public class ClubController {
     public ResponseEntity<MemberListDTO> getClubMembers(@PathVariable Long clubId) {
         MemberListDTO members = clubService.getClubMembers(clubId);
         return ResponseEntity.ok(members);
+    }
+
+    @GetMapping("/{clubId}/relation")
+    public ResponseEntity<?> getRelation (
+            @PathVariable Long clubId,
+            HttpServletRequest httpRequest
+    ) {
+        Long hostId = memberService.getHostIdFromCookie(httpRequest);
+        ClubMemberRelationDTO relation = clubService.getRelation(clubId, hostId);
+        return ResponseEntity.ok(relation);
     }
 
     @DeleteMapping("/{clubId}")
