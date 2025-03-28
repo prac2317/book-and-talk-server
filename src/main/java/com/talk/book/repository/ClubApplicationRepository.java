@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ClubApplicationRepository extends JpaRepository<ClubApplication, Long> {
     List<ClubApplication> findByMemberIdAndClubId(Long memberId, Long clubId);
+    List<ClubApplication> findByClubId(Long clubId);
 }

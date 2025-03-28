@@ -1,6 +1,8 @@
 package com.talk.book.controller;
 
+import com.talk.book.dto.ApplicantListDTO;
 import com.talk.book.dto.ApplicationRequestDTO;
+import com.talk.book.dto.ApplicantDTO;
 import com.talk.book.service.ClubApplicationService;
 import com.talk.book.service.ClubService;
 import com.talk.book.service.MemberService;
@@ -29,4 +31,16 @@ public class ClubApplicationController {
 
         return ResponseEntity.ok("참가 신청 완료");
     }
+
+    @GetMapping("/api/v1/clubs/{clubId}/applications")
+    public ResponseEntity<ApplicantListDTO> getApplicants(
+            @PathVariable Long clubId,
+            HttpServletRequest httpRequest
+    ) {
+        Long memberId = memberService.getHostIdFromCookie(httpRequest);
+        ApplicantListDTO response = clubApplicationService.getApplicants(clubId, memberId);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

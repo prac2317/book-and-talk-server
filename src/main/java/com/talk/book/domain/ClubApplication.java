@@ -1,5 +1,6 @@
 package com.talk.book.domain;
 
+import com.talk.book.enumerate.ClubApplicationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,8 +33,9 @@ public class ClubApplication {
     @Column(length = 200, nullable = false)
     private String QuestionAnswer;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Boolean isCompleted;
+    private ClubApplicationType status;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
