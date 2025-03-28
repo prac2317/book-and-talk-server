@@ -1,10 +1,12 @@
 package com.talk.book.service;
 
 import com.talk.book.domain.Club;
+import com.talk.book.domain.ClubApplication;
 import com.talk.book.domain.Member;
 import com.talk.book.domain.MemberClub;
 import com.talk.book.dto.*;
 import com.talk.book.enumerate.ClubMemberRelationType;
+import com.talk.book.repository.ClubApplicationRepository;
 import com.talk.book.repository.ClubRepository;
 import com.talk.book.repository.MemberClubRepository;
 import com.talk.book.repository.MemberRepository;
@@ -21,6 +23,7 @@ public class ClubService {
     private final ClubRepository clubRepository;
     private final MemberRepository memberRepository;
     private final MemberClubRepository memberClubRepository;
+    private final ClubApplicationRepository clubApplicationRepository;
 
     public Club createClub(ClubRequest request, Long hostId) {
         Member host = memberRepository.findById(hostId)
@@ -50,7 +53,7 @@ public class ClubService {
         MemberClub memberClub = new MemberClub();
         memberClub.setMember(host);
         memberClub.setClub(savedClub);
-        memberClub.setHost(true);
+        memberClub.setIsHost(true);
         memberClubRepository.save(memberClub);
 
         return savedClub;
@@ -62,7 +65,7 @@ public class ClubService {
 
         List<MemberDTO> memberDTOs = members.stream()
                 .map(memberClub -> new MemberDTO(
-                        memberClub.isHost(),
+                        memberClub.getIsHost(),
                         memberClub.getMember().getId(),
                         memberClub.getMember().getNickname()
                 ))
@@ -75,12 +78,12 @@ public class ClubService {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("클럽을 찾을 수 없습니다."));
 
-        // Todo: 1. 호스트와 사용자 일치하는지 확인
+        // 방문자가 호스트인지 확인
         if (club.getHost().getId().equals(hostId)) {
             return new ClubMemberRelationDTO(ClubMemberRelationType.HOST);
         }
 
-        // Todo: 2. 사용자가 클럽의 멤버인지 확인
+        // 방문자가 클럽의 멤버인지 확인
         List<MemberClub> members = memberClubRepository.findByClubId(clubId);
         for (MemberClub memberClub : members) {
             if (memberClub.getMember().getId() == hostId) {
@@ -88,9 +91,13 @@ public class ClubService {
             }
         }
 
-        // Todo: 3. 사용자가 참가 신청 상태인지 확인하기
+        // 방문자가 가입 신청 상태인지 확인
+        boolean isApplicant = !clubApplicationRepository.findByMemberIdAndClubId(hostId, clubId).isEmpty();
+        if (isApplicant) {
+            return new ClubMemberRelationDTO(ClubMemberRelationType.APPLICANT);
+        }
 
-        // Todo: 4. 아무관계도 아니면 아니라고 반환
+        // 아무관계도 아님
         return new ClubMemberRelationDTO(ClubMemberRelationType.NONE);
 
     }
@@ -141,6 +148,11 @@ public class ClubService {
     }
 
     public void deleteClub(Long clubId) {
+        List<MemberClub> memberClubs = memberClubRepository.findByClubId(clubId);
+        for (MemberClub memberClub : memberClubs) {
+            memberClubRepository.deleteById(memberClub.getId());
+        }
+
         clubRepository.deleteById(clubId);
     }
 }

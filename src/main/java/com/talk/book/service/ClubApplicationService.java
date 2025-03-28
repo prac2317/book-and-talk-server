@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,12 +29,16 @@ public class ClubApplicationService {
         Member member = memberRepository.findById(hostId)
                 .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
 
-        // Todo: answer 길이 체크하기. 0이거나 200자 넘으면 안됨.
-        if (request.getQuestionAnswer().isEmpty() || request.getQuestionAnswer().length() < 200) {
+        if (request.getQuestionAnswer().isEmpty() || request.getQuestionAnswer().length() > 200) {
             throw new RuntimeException("답변은 200자 이내로 작성해주세요.");
         }
 
-        // Todo: 중복 체크하기
+        List<ClubApplication> clubApplications = clubApplicationRepository.findByMemberIdAndClubId(hostId, clubId);
+        clubApplications.forEach(clubApplication -> {
+            if (!clubApplication.getIsCompleted()) {
+                throw new RuntimeException("이미 가입 신청한 상태입니다.");
+            }
+        });
 
         ClubApplication clubApplication = ClubApplication.builder()
                 .member(member)
