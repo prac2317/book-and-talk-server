@@ -39,4 +39,8 @@ public class ClubApplication {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    public void changeStatus (ClubApplicationType status) {
+        this.status = status;
+    }
 }
