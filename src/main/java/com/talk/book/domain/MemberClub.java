@@ -7,9 +7,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "member_club")
+@Builder
 @Getter
 @Setter
-@Builder
 public class MemberClub {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,5 +25,5 @@ public class MemberClub {
     private Member member;
 
     @Column(nullable = false)
-    private boolean isHost;
+    private Boolean isHost;
 }
