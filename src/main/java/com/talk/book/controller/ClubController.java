@@ -45,7 +45,7 @@ public class ClubController {
         return ResponseEntity.ok(club);
     }
 
-    @GetMapping("/{clubId}/members")
+    @GetMapping("/{clubId}/member")
     public ResponseEntity<MemberListDTO> getClubMembers(@PathVariable Long clubId) {
         MemberListDTO members = clubService.getClubMembers(clubId);
         return ResponseEntity.ok(members);

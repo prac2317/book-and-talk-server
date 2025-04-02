@@ -2,11 +2,13 @@ package com.talk.book.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class MemberListDTO {
-    private List<MemberDTO> data;
+public class FavoriteBookResponse {
+    private int totalCount;
+    private List<Long> data;
 }
