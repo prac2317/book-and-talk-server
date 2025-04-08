@@ -8,6 +8,7 @@ import com.talk.book.dto.FavoriteClubResponse;
 import com.talk.book.security.ApiResponse;
 import com.talk.book.service.FavoriteClubService;
 import com.talk.book.service.MemberService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -51,5 +52,29 @@ public class FavoriteClubController {
                 .collect(Collectors.toList());
         ClubResponseDTO response = new ClubResponseDTO(clubListItems.size(), clubListItems);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/relation")
+    public ResponseEntity<ApiResponse> isFavoriteClub(
+            HttpServletRequest request,
+            @RequestBody FavoriteClubRequest favoriteClubRequest) {
+        Long memberId = getHostIdFromCookie(request);
+        boolean exists = favoriteClubService.isFavoriteClub(memberId, favoriteClubRequest.getClubId());
+        return ResponseEntity.ok(new ApiResponse(exists ? "클럽이 즐겨찾기 되어있습니다." : "클럽이 즐겨찾기 되어있지 않습니다."));
+    }
+
+    private Long getHostIdFromCookie(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("hostId".equals(cookie.getName())) {
+                    try {
+                        return Long.parseLong(cookie.getValue());
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException("유효하지 않은 hostId 쿠키 값입니다.");
+                    }
+                }
+            }
+        }
+        throw new IllegalArgumentException("hostId 쿠키가 존재하지 않습니다.");
     }
 }

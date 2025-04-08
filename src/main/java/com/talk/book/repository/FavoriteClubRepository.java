@@ -15,4 +15,6 @@ public interface FavoriteClubRepository extends JpaRepository<FavoriteClub, Long
     Optional<FavoriteClub> findByMemberAndClub(Member member, Club club);
 
     List<FavoriteClub> findAllByMember(Member member);
+
+    boolean existsByMemberIdAndClubId(Long memberId, Long clubId);
 }

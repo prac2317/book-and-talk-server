@@ -23,6 +23,11 @@ public class FavoriteClubService {
     private final MemberRepository memberRepository;
     private final ClubRepository clubRepository;
 
+
+    public boolean isFavoriteClub(Long memberId, Long clubId) {
+        return favoriteClubRepository.existsByMemberIdAndClubId(memberId, clubId);
+    }
+
     @Transactional
     public void addFavoriteClub(Long memberId, Long clubId) {
         Member member = memberRepository.findById(memberId)

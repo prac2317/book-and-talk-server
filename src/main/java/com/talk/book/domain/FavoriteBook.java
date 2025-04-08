@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"member_id", "book_id"})
+        @UniqueConstraint(columnNames = {"member_id", "isbn13"})
 })
 public class FavoriteBook {
 
@@ -23,13 +23,12 @@ public class FavoriteBook {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id", nullable = false)
-    private Book book;
+    @Column(name = "isbn13", nullable = false)
+    private String isbn13;
 
     @Builder
-    public FavoriteBook(Member member, Book book) {
+    public FavoriteBook(Member member, String isbn13) {
         this.member = member;
-        this.book = book;
+        this.isbn13 = isbn13;
     }
 }

@@ -10,5 +10,5 @@ import java.util.List;
 @AllArgsConstructor
 public class FavoriteBookResponse {
     private int totalCount;
-    private List<Long> data;
+    private List<String> data; // 변경: Long → String
 }

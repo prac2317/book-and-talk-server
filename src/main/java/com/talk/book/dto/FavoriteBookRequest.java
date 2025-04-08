@@ -6,5 +6,5 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class FavoriteBookRequest {
-    private Long isbn13;
+    private String isbn13;
 }
