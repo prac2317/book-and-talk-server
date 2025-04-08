@@ -1,10 +1,7 @@
 package com.talk.book.controller;
 
 
-import com.talk.book.dto.ClubListItemDTO;
-import com.talk.book.dto.ClubResponseDTO;
-import com.talk.book.dto.FavoriteClubRequest;
-import com.talk.book.dto.FavoriteClubResponse;
+import com.talk.book.dto.*;
 import com.talk.book.security.ApiResponse;
 import com.talk.book.service.FavoriteClubService;
 import com.talk.book.service.MemberService;
@@ -55,12 +52,15 @@ public class FavoriteClubController {
     }
 
     @GetMapping("/relation")
-    public ResponseEntity<ApiResponse> isFavoriteClub(
+    public ResponseEntity<ClubFavoriteRelationResponse> isFavoriteClub(
             HttpServletRequest request,
-            @RequestBody FavoriteClubRequest favoriteClubRequest) {
+            @RequestParam Long clubId) {
         Long memberId = getHostIdFromCookie(request);
-        boolean exists = favoriteClubService.isFavoriteClub(memberId, favoriteClubRequest.getClubId());
-        return ResponseEntity.ok(new ApiResponse(exists ? "클럽이 즐겨찾기 되어있습니다." : "클럽이 즐겨찾기 되어있지 않습니다."));
+        boolean exists = favoriteClubService.isFavoriteClub(memberId, clubId);
+
+        ClubFavoriteRelationResponse response = new ClubFavoriteRelationResponse();
+        response.setIsFavorite(exists);
+        return ResponseEntity.ok(response);
     }
 
     private Long getHostIdFromCookie(HttpServletRequest request) {

@@ -1,5 +1,6 @@
 package com.talk.book.controller;
 
+import com.talk.book.dto.BookFavoriteRelationResponse;
 import com.talk.book.dto.FavoriteBookRequest;
 import com.talk.book.dto.FavoriteBookResponse;
 import com.talk.book.dto.FavoriteClubRequest;
@@ -48,12 +49,15 @@ public class FavoriteBookController {
     }
 
     @GetMapping("/relation")
-    public ResponseEntity<ApiResponse> isFavoriteBook(
+    public ResponseEntity<BookFavoriteRelationResponse> isFavoriteBook(
             HttpServletRequest request,
-            @RequestBody FavoriteBookRequest favoriteBookRequest) {
+            @RequestParam String isbn13) {
         Long memberId = getHostIdFromCookie(request);
-        boolean exists = favoriteBookService.isFavoriteBook(memberId, favoriteBookRequest.getIsbn13());
-        return ResponseEntity.ok(new ApiResponse(exists ? "책이 즐겨찾기 되어있습니다." : "책이 즐겨찾기 되어있지 않습니다."));
+        boolean exists = favoriteBookService.isFavoriteBook(memberId, isbn13);
+
+        BookFavoriteRelationResponse response = new BookFavoriteRelationResponse();
+        response.setIsFavorite(exists);
+        return ResponseEntity.ok(response);
     }
 
     private Long getHostIdFromCookie(HttpServletRequest request) {
