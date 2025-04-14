@@ -38,7 +38,7 @@ public class MemberService {
 //            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
 //        }
 
-        Cookie cookie = new Cookie("hostId", String.valueOf(member.getId()));
+        Cookie cookie = new Cookie("memberId", String.valueOf(member.getId()));
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -46,18 +46,18 @@ public class MemberService {
         return UUID.randomUUID().toString();
     }
 
-    public Long getHostIdFromCookie(HttpServletRequest request) {
+    public Long getMemberIdFromCookie(HttpServletRequest request) {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if ("hostId".equals(cookie.getName())) { // "hostId" 쿠키 확인
+                if ("memberId".equals(cookie.getName())) {
                     try {
                         return Long.parseLong(cookie.getValue());
                     } catch (NumberFormatException e) {
-                        throw new IllegalArgumentException("유효하지 않은 hostId 쿠키 값입니다.");
+                        throw new IllegalArgumentException("유효하지 않은 memberId 쿠키 값입니다.");
                     }
                 }
             }
         }
-        throw new IllegalArgumentException("hostId 쿠키가 존재하지 않습니다.");
+        throw new IllegalArgumentException("memberId 쿠키가 존재하지 않습니다.");
     }
 }

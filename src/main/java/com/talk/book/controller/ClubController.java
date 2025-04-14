@@ -31,7 +31,7 @@ public class ClubController {
             @RequestBody ClubRequest request,
             HttpServletRequest httpRequest) {
 
-        Long hostId = memberService.getHostIdFromCookie(httpRequest);
+        Long hostId = memberService.getMemberIdFromCookie(httpRequest);
         if (hostId == null) {
             throw new IllegalArgumentException("호스트 ID를 찾을 수 없습니다.");
         }
@@ -57,8 +57,8 @@ public class ClubController {
             @PathVariable Long clubId,
             HttpServletRequest httpRequest
     ) {
-        Long hostId = memberService.getHostIdFromCookie(httpRequest);
-        ClubMemberRelationDTO relation = clubService.getRelation(clubId, hostId);
+        Long memberId = memberService.getMemberIdFromCookie(httpRequest);
+        ClubMemberRelationDTO relation = clubService.getRelation(clubId, memberId);
         return ResponseEntity.ok(relation);
     }
 

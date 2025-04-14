@@ -26,7 +26,7 @@ public class FavoriteBookController {
     public ResponseEntity<ApiResponse> addFavoriteBook(
             HttpServletRequest request,
             @RequestBody FavoriteBookRequest favoriteBookRequest) {
-        Long memberId = getHostIdFromCookie(request);
+        Long memberId = getMemberIdFromCookie(request);
         favoriteBookService.addFavoriteBook(memberId, favoriteBookRequest.getIsbn13());
         return ResponseEntity.ok(new ApiResponse("책이 즐겨찾기에 추가되었습니다."));
     }
@@ -35,14 +35,14 @@ public class FavoriteBookController {
     public ResponseEntity<ApiResponse> removeFavoriteBook(
             HttpServletRequest request,
             @PathVariable String isbn13) {
-        Long memberId = getHostIdFromCookie(request);
+        Long memberId = getMemberIdFromCookie(request);
         favoriteBookService.removeFavoriteBook(memberId, isbn13);
         return ResponseEntity.ok(new ApiResponse("책이 즐겨찾기에서 삭제되었습니다."));
     }
 
     @GetMapping
     public ResponseEntity<FavoriteBookResponse> getFavoriteBooks(HttpServletRequest request) {
-        Long memberId = getHostIdFromCookie(request);
+        Long memberId = getMemberIdFromCookie(request);
         List<String> favorites = favoriteBookService.getFavoriteBooks(memberId);
         FavoriteBookResponse response = new FavoriteBookResponse(favorites.size(), favorites);
         return ResponseEntity.ok(response);
@@ -52,7 +52,7 @@ public class FavoriteBookController {
     public ResponseEntity<BookFavoriteRelationResponse> isFavoriteBook(
             HttpServletRequest request,
             @RequestParam String isbn13) {
-        Long memberId = getHostIdFromCookie(request);
+        Long memberId = getMemberIdFromCookie(request);
         boolean exists = favoriteBookService.isFavoriteBook(memberId, isbn13);
 
         BookFavoriteRelationResponse response = new BookFavoriteRelationResponse();
@@ -60,18 +60,18 @@ public class FavoriteBookController {
         return ResponseEntity.ok(response);
     }
 
-    private Long getHostIdFromCookie(HttpServletRequest request) {
+    public Long getMemberIdFromCookie(HttpServletRequest request) {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if ("hostId".equals(cookie.getName())) {
+                if ("memberId".equals(cookie.getName())) {
                     try {
                         return Long.parseLong(cookie.getValue());
                     } catch (NumberFormatException e) {
-                        throw new IllegalArgumentException("유효하지 않은 hostId 쿠키 값입니다.");
+                        throw new IllegalArgumentException("유효하지 않은 memberId 쿠키 값입니다.");
                     }
                 }
             }
         }
-        throw new IllegalArgumentException("hostId 쿠키가 존재하지 않습니다.");
+        throw new IllegalArgumentException("memberId 쿠키가 존재하지 않습니다.");
     }
 }
