@@ -1,15 +1,9 @@
 package com.talk.book.service;
 
-import com.talk.book.domain.Club;
-import com.talk.book.domain.ClubApplication;
-import com.talk.book.domain.Member;
-import com.talk.book.domain.MemberClub;
+import com.talk.book.domain.*;
 import com.talk.book.dto.*;
 import com.talk.book.enumerate.ClubMemberRelationType;
-import com.talk.book.repository.ClubApplicationRepository;
-import com.talk.book.repository.ClubRepository;
-import com.talk.book.repository.MemberClubRepository;
-import com.talk.book.repository.MemberRepository;
+import com.talk.book.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +18,8 @@ public class ClubService {
     private final MemberRepository memberRepository;
     private final MemberClubRepository memberClubRepository;
     private final ClubApplicationRepository clubApplicationRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final MemberChatRoomRepository memberChatRoomRepository;
 
     public Club createClub(ClubRequest request, Long hostId) {
         Member host = memberRepository.findById(hostId)
@@ -47,8 +43,21 @@ public class ClubService {
                 .clubImage("")
                 .createdAt(LocalDateTime.now())
                 .build();
-
         Club savedClub = clubRepository.save(club);
+
+        ChatRoom chatRoom = ChatRoom.builder().club(savedClub)
+                .recentChat(null)
+                .name(savedClub.getName())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+        ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
+
+        MemberChatRoom memberChatRoom = MemberChatRoom.builder().chatRoom(savedChatRoom)
+                .member(host)
+                .isHost(true)
+                .build();
+        memberChatRoomRepository.save(memberChatRoom);
 
         MemberClub memberClub = new MemberClub();
         memberClub.setMember(host);
