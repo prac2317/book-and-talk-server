@@ -2,6 +2,8 @@ package com.talk.book.controller;
 
 import com.talk.book.domain.Chat;
 import com.talk.book.dto.ChatDTO;
+import com.talk.book.dto.GetChatRoomMessagesResponse;
+import com.talk.book.dto.GetChatRoomParticipantsResponse;
 import com.talk.book.dto.GetChatRoomsResponse;
 import com.talk.book.service.ChatService;
 import com.talk.book.service.MemberService;
@@ -16,6 +18,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -38,6 +41,22 @@ public class ChatController {
     public ResponseEntity<GetChatRoomsResponse> getChatRooms(HttpServletRequest httpRequest) {
         Long memberId = memberService.getHostIdFromCookie(httpRequest);
         GetChatRoomsResponse response = chatService.getChatRooms(memberId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/api/v1/chat/chatrooms/{chatRoomId}/participants")
+    public ResponseEntity<GetChatRoomParticipantsResponse> getParticipants(
+            @PathVariable Long chatRoomId
+        ) {
+        GetChatRoomParticipantsResponse response = chatService.getParticipants(chatRoomId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/api/v1/chat/chatrooms/{chatRoomId}/messages")
+    public ResponseEntity<GetChatRoomMessagesResponse> getMessages(
+            @PathVariable Long chatRoomId
+    ) {
+        GetChatRoomMessagesResponse response = chatService.getMessages(chatRoomId);
         return ResponseEntity.ok(response);
     }
 }
