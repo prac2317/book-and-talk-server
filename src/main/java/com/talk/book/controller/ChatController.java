@@ -2,7 +2,10 @@ package com.talk.book.controller;
 
 import com.talk.book.domain.Chat;
 import com.talk.book.dto.ChatDTO;
+import com.talk.book.dto.GetChatRoomsResponse;
 import com.talk.book.service.ChatService;
+import com.talk.book.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -23,10 +26,18 @@ public class ChatController {
 
     private final SimpMessagingTemplate template;
     private final ChatService chatService;
+    private final MemberService memberService;
 
     @MessageMapping("/chat")
     public void chat(ChatDTO chatDTO) {
         ChatDTO newChatDTO = chatService.saveChat(chatDTO);
         template.convertAndSend("/topic/chat", newChatDTO);
+    }
+
+    @GetMapping("/api/v1/chat/chatrooms")
+    public ResponseEntity<GetChatRoomsResponse> getChatRooms(HttpServletRequest httpRequest) {
+        Long memberId = memberService.getHostIdFromCookie(httpRequest);
+        GetChatRoomsResponse response = chatService.getChatRooms(memberId);
+        return ResponseEntity.ok(response);
     }
 }

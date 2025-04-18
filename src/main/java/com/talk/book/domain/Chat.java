@@ -22,7 +22,7 @@ public class Chat {
     private Long id;
 
     @JoinColumn(name = "sender_id")
-    @OneToOne
+    @ManyToOne
     private Member sender;
 
     @Column(length = 200, nullable = false)
