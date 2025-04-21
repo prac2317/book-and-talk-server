@@ -1,18 +1,12 @@
 package com.talk.book.service;
 
-import com.talk.book.domain.Club;
-import com.talk.book.domain.ClubApplication;
-import com.talk.book.domain.Member;
-import com.talk.book.domain.MemberClub;
+import com.talk.book.domain.*;
 import com.talk.book.dto.ApplicantListDTO;
 import com.talk.book.dto.ApplicationRequestDTO;
 import com.talk.book.dto.ApplicantDTO;
 import com.talk.book.enumerate.ClubApplicationType;
 import com.talk.book.enumerate.ProcessType;
-import com.talk.book.repository.ClubApplicationRepository;
-import com.talk.book.repository.ClubRepository;
-import com.talk.book.repository.MemberClubRepository;
-import com.talk.book.repository.MemberRepository;
+import com.talk.book.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +23,8 @@ public class ClubApplicationService {
     private final ClubRepository clubRepository;
     private final MemberClubRepository memberClubRepository;
     private final ClubApplicationRepository clubApplicationRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final MemberChatRoomRepository memberChatRoomRepository;
 
     public void applyToClub(Long clubId, Long hostId, ApplicationRequestDTO request) {
 
@@ -109,10 +105,19 @@ public class ClubApplicationService {
             memberClub.setIsHost(false);
             memberClubRepository.save(memberClub);
 
+            MemberChatRoom memberChatRoom = MemberChatRoom.builder()
+                    .chatRoom(chatRoomRepository.findByClubId(clubId)) // 나중에 club에 ChatRoom 추가하기
+                    .member(member)
+                    .isHost(false)
+                    .build();
+            memberChatRoomRepository.save(memberChatRoom);
+
             clubApplication.changeStatus(ClubApplicationType.APPROVED);
         } else if (processType.equals(ProcessType.REJECT)) {
             clubApplication.changeStatus(ClubApplicationType.REJECTED);
         }
+
+
 
         clubApplicationRepository.save(clubApplication);
     }
