@@ -4,6 +4,7 @@ import com.talk.book.dto.LoginRequest;
 import com.talk.book.dto.SignupRequest;
 import com.talk.book.service.MemberService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +43,14 @@ public class MemberController {
         response.addCookie(cookie);
 
         return ResponseEntity.ok("로그아웃 완료");
+    }
+
+    // TODO: 쿠키 -> 토큰으로 수정할 떄 지우기
+    @GetMapping("/member")
+    public ResponseEntity<Long> getMemberId(HttpServletRequest httpRequest) {
+        Long memberId = memberService.getHostIdFromCookie(httpRequest);
+
+        return ResponseEntity.ok(memberId);
     }
 
 }
