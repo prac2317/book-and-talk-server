@@ -82,6 +82,8 @@ public class BookService {
             } catch (RestClientException innerEx) {
                 log.error("Failed to retrieve error response body as String: {}", innerEx.getMessage());
             }
+
+            throw new RuntimeException("Failed to call Aladin API", e);
         }
 
     }
