@@ -6,6 +6,7 @@ import com.talk.book.domain.Member;
 import com.talk.book.repository.BookRepository;
 import com.talk.book.repository.FavoriteBookRepository;
 import com.talk.book.repository.MemberRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FavoriteBookService {
