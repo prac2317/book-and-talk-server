@@ -47,6 +47,7 @@ public class MemberService {
     }
 
     public Long getHostIdFromCookie(HttpServletRequest request) {
+        System.out.println("getHostIdFromCookie");
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("hostId".equals(cookie.getName())) { // "hostId" 쿠키 확인

@@ -48,6 +48,7 @@ public class MemberController {
     // TODO: 쿠키 -> 토큰으로 수정할 떄 지우기
     @GetMapping("/member")
     public ResponseEntity<Long> getMemberId(HttpServletRequest httpRequest) {
+        System.out.println("getMemberId");
         Long memberId = memberService.getHostIdFromCookie(httpRequest);
 
         return ResponseEntity.ok(memberId);
