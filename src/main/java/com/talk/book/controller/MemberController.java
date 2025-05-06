@@ -26,21 +26,21 @@ public class MemberController {
     public ResponseEntity<String> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         String sessionId = memberService.login(request.getEmail(), request.getPassword());
 
-        Cookie cookie = new Cookie("sessionId", sessionId);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(3600);
-        response.addCookie(cookie);
+//        Cookie cookie = new Cookie("sessionId", sessionId);
+//        cookie.setHttpOnly(true);
+//        cookie.setPath("/");
+//        cookie.setMaxAge(3600);
+//        response.addCookie(cookie);
 
         return  ResponseEntity.ok("로그인 성공");
     }
 
     @GetMapping("/logout")
     public ResponseEntity<String> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("sessionId", null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+//        Cookie cookie = new Cookie("sessionId", null);
+//        cookie.setMaxAge(0);
+//        cookie.setPath("/");
+//        response.addCookie(cookie);
 
         return ResponseEntity.ok("로그아웃 완료");
     }
