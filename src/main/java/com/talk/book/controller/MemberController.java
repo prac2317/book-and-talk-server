@@ -49,6 +49,15 @@ public class MemberController {
     @GetMapping("/member")
     public ResponseEntity<Long> getMemberId(HttpServletRequest httpRequest) {
         System.out.println("getMemberId");
+        Cookie[] cookies = httpRequest.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                System.out.println("쿠키 이름: " + cookie.getName() + ", 값: " + cookie.getValue());
+            }
+        } else {
+            System.out.println("쿠키가 없습니다!");
+        }
+
         Long memberId = memberService.getHostIdFromCookie(httpRequest);
 
         return ResponseEntity.ok(memberId);

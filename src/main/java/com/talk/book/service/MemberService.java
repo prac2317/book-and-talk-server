@@ -47,6 +47,7 @@ public class MemberService {
 //        response.addCookie(cookie);
 
         ResponseCookie cookie = ResponseCookie.from("hostId", String.valueOf(member.getId()))
+                .domain("vercel.app")
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
