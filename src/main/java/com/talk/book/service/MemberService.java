@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 //import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -38,10 +40,21 @@ public class MemberService {
 //            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
 //        }
 
-        Cookie cookie = new Cookie("hostId", String.valueOf(member.getId()));
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+//        Cookie cookie = new Cookie("hostId", String.valueOf(member.getId()));
+//        cookie.setHttpOnly(true);
+//        cookie.setPath("/");
+//        cookie.setSecure(true);
+//        response.addCookie(cookie);
+
+        ResponseCookie cookie = ResponseCookie.from("hostId", String.valueOf(member.getId()))
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
+                .maxAge(3600)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         return UUID.randomUUID().toString();
     }
