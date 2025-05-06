@@ -47,7 +47,6 @@ public class MemberService {
 //        response.addCookie(cookie);
 
         ResponseCookie cookie = ResponseCookie.from("hostId", String.valueOf(member.getId()))
-                .domain("book-and-talk-client-git-deploy-sjs-projects-c78fe08f.vercel.app")
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
