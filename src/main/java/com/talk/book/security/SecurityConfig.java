@@ -47,7 +47,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of("https://book-and-talk-client-biy7w4g99-sjs-projects-c78fe08f.vercel.app"));
+        config.setAllowedOriginPatterns(List.of("https://book-and-talk-client-git-deploy-sjs-projects-c78fe08f.vercel.app"));
 //        config.setAllowedOrigins(List.of("http://localhost:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
