@@ -40,3 +40,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Sensitive files ###
+*.p12
+*.key
+*.pem

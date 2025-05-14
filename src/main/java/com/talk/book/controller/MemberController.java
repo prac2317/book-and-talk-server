@@ -26,21 +26,21 @@ public class MemberController {
     public ResponseEntity<String> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         String sessionId = memberService.login(request.getEmail(), request.getPassword());
 
-        Cookie cookie = new Cookie("sessionId", sessionId);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(3600);
-        response.addCookie(cookie);
+//        Cookie cookie = new Cookie("sessionId", sessionId);
+//        cookie.setHttpOnly(true);
+//        cookie.setPath("/");
+//        cookie.setMaxAge(3600);
+//        response.addCookie(cookie);
 
         return  ResponseEntity.ok("로그인 성공");
     }
 
     @GetMapping("/logout")
     public ResponseEntity<String> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("sessionId", null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+//        Cookie cookie = new Cookie("sessionId", null);
+//        cookie.setMaxAge(0);
+//        cookie.setPath("/");
+//        response.addCookie(cookie);
 
         return ResponseEntity.ok("로그아웃 완료");
     }
@@ -48,6 +48,16 @@ public class MemberController {
     // TODO: 쿠키 -> 토큰으로 수정할 떄 지우기
     @GetMapping("/member")
     public ResponseEntity<Long> getMemberId(HttpServletRequest httpRequest) {
+        System.out.println("getMemberId");
+        Cookie[] cookies = httpRequest.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                System.out.println("쿠키 이름: " + cookie.getName() + ", 값: " + cookie.getValue());
+            }
+        } else {
+            System.out.println("쿠키가 없습니다!");
+        }
+
         Long memberId = memberService.getHostIdFromCookie(httpRequest);
 
         return ResponseEntity.ok(memberId);
