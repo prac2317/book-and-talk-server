@@ -10,11 +10,13 @@ import com.talk.book.service.FavoriteBookService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/favorites/books")
 @RequiredArgsConstructor
@@ -52,6 +54,8 @@ public class FavoriteBookController {
     public ResponseEntity<BookFavoriteRelationResponse> isFavoriteBook(
             HttpServletRequest request,
             @RequestParam String isbn13) {
+
+        log.info("isFavoriteBook isbn13 : {}", isbn13);
         Long memberId = getMemberIdFromCookie(request);
         boolean exists = favoriteBookService.isFavoriteBook(memberId, isbn13);
 
@@ -60,7 +64,9 @@ public class FavoriteBookController {
         return ResponseEntity.ok(response);
     }
 
+
     public Long getMemberIdFromCookie(HttpServletRequest request) {
+        log.info("getHostIdFromCookie");
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("memberId".equals(cookie.getName())) {

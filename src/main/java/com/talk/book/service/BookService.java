@@ -8,10 +8,12 @@ import com.talk.book.dto.BookSummary;
 import com.talk.book.dto.GetBookListResponse;
 import com.talk.book.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookService {
 
     private final BookRepository bookRepository;
@@ -35,30 +38,54 @@ public class BookService {
         String apiKey = aladinApiProperties.getApiKey();
         String baseUrl = aladinApiProperties.getBaseUrl();
 
-        ResponseEntity<AladinResponse> response = restTemplate.exchange(
-                baseUrl + "?ttbkey=" + apiKey + "&QueryType=" + category + "&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101",
-                HttpMethod.GET,
-                request,
-                AladinResponse.class
-        );
-        // todo: 받아온 리스트 책에 저장하기
-        List<BookSummary> item = response.getBody().getItem();
-        for (BookSummary bookSummary : item) {
-            Book book = new Book();
-            book.setTitle(bookSummary.getTitle());
-            book.setIsbn13(bookSummary.getIsbn13());
-            book.setCover(bookSummary.getCover());
+        try {
+            ResponseEntity<AladinResponse> response = restTemplate.exchange(
+                    baseUrl + "?ttbkey=" + apiKey + "&QueryType=" + category + "&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101",
+                    HttpMethod.GET,
+                    request,
+                    AladinResponse.class
+            );
 
-            // todo: 변경 여지 있는지 확인
-            if (category.equals("BestSeller")) {
-                book.setCategory(BookCategory.Bestseller);
-            } else if (category.equals("BlogBest")) {
-                book.setCategory(BookCategory.BlogBest);
-            } else {
-                book.setCategory(BookCategory.ItemNewAll);
+            log.info("Successfully received Aladin response.");
+
+            // todo: 받아온 리스트 책에 저장하기
+            List<BookSummary> item = response.getBody().getItem();
+            for (BookSummary bookSummary : item) {
+                Book book = new Book();
+                book.setTitle(bookSummary.getTitle());
+                book.setIsbn13(bookSummary.getIsbn13());
+                book.setCover(bookSummary.getCover());
+
+                // todo: 변경 여지 있는지 확인
+                if (category.equals("BestSeller")) {
+                    book.setCategory(BookCategory.Bestseller);
+                } else if (category.equals("BlogBest")) {
+                    book.setCategory(BookCategory.BlogBest);
+                } else {
+                    book.setCategory(BookCategory.ItemNewAll);
+                }
+                bookRepository.save(book);
             }
-            bookRepository.save(book);
+
+        } catch (RestClientException e) {
+            log.error("RestTemplate call failed: {}", e.getMessage(), e);
+
+            try {
+                ResponseEntity<String> errorResponse = restTemplate.exchange(
+                        baseUrl + "?ttbkey=" + apiKey + "&QueryType=" + category + "&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101",
+                        HttpMethod.GET,
+                        request,
+                        String.class
+                );
+                log.error("Aladin API returned non-JSON response (HTML/XML?). Status: {}, Body: {}",
+                        errorResponse.getStatusCode(), errorResponse.getBody());
+            } catch (RestClientException innerEx) {
+                log.error("Failed to retrieve error response body as String: {}", innerEx.getMessage());
+            }
+
+            throw new RuntimeException("Failed to call Aladin API", e);
         }
+
     }
 
     public GetBookListResponse getBookList(String category) {
