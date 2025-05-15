@@ -26,19 +26,19 @@ public class ClubApplicationService {
     private final ChatRoomRepository chatRoomRepository;
     private final MemberChatRoomRepository memberChatRoomRepository;
 
-    public void applyToClub(Long clubId, Long hostId, ApplicationRequestDTO request) {
+    public void applyToClub(Long clubId, Long memberId, ApplicationRequestDTO request) {
 
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new RuntimeException("클럽을 찾을 수 없습니다."));
 
-        Member member = memberRepository.findById(hostId)
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
 
         if (request.getQuestionAnswer().isEmpty() || request.getQuestionAnswer().length() > 200) {
             throw new RuntimeException("답변은 200자 이내로 작성해주세요.");
         }
 
-        List<ClubApplication> clubApplications = clubApplicationRepository.findByMemberIdAndClubId(hostId, clubId);
+        List<ClubApplication> clubApplications = clubApplicationRepository.findByMemberIdAndClubId(memberId, clubId);
         clubApplications.forEach(clubApplication -> {
             if (clubApplication.getStatus().equals(ClubApplicationType.PENDING)) {
                 throw new RuntimeException("이미 가입 신청한 상태입니다.");

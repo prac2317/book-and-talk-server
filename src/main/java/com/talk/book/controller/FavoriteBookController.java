@@ -66,7 +66,7 @@ public class FavoriteBookController {
 
 
     public Long getMemberIdFromCookie(HttpServletRequest request) {
-        log.info("getHostIdFromCookie");
+        log.info("getMemberIdIdFromCookie");
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("memberId".equals(cookie.getName())) {

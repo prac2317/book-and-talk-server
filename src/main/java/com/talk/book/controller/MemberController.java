@@ -58,7 +58,7 @@ public class MemberController {
             System.out.println("쿠키가 없습니다!");
         }
 
-        Long memberId = memberService.getHostIdFromCookie(httpRequest);
+        Long memberId = memberService.getMemberIdFromCookie(httpRequest);
 
         return ResponseEntity.ok(memberId);
     }

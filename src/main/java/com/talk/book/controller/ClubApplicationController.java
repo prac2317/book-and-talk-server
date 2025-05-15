@@ -30,8 +30,8 @@ public class ClubApplicationController {
             @RequestBody ApplicationRequestDTO request,
             HttpServletRequest httpRequest
     ) {
-        Long hostId = memberService.getMemberIdFromCookie(httpRequest);
-        clubApplicationService.applyToClub(clubId, hostId, request);
+        Long memberId = memberService.getMemberIdFromCookie(httpRequest);
+        clubApplicationService.applyToClub(clubId, memberId, request);
 
         return ResponseEntity.ok("참가 신청 완료");
     }

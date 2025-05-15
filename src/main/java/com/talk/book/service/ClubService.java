@@ -21,8 +21,8 @@ public class ClubService {
     private final ChatRoomRepository chatRoomRepository;
     private final MemberChatRoomRepository memberChatRoomRepository;
 
-    public Club createClub(ClubRequest request, Long hostId) {
-        Member host = memberRepository.findById(hostId)
+    public Club createClub(ClubRequest request, Long memberId) {
+        Member host = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("호스트를 찾을 수 없습니다."));
 
         if (request.getMaxParticipants() < 1) {
@@ -83,25 +83,25 @@ public class ClubService {
         return new MemberListDTO(memberDTOs);
     }
 
-    public ClubMemberRelationDTO getRelation(Long clubId, Long hostId) {
+    public ClubMemberRelationDTO getRelation(Long clubId, Long memberId) {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("클럽을 찾을 수 없습니다."));
 
         // 방문자가 호스트인지 확인
-        if (club.getHost().getId().equals(hostId)) {
+        if (club.getHost().getId().equals(memberId)) {
             return new ClubMemberRelationDTO(ClubMemberRelationType.HOST);
         }
 
         // 방문자가 클럽의 멤버인지 확인
         List<MemberClub> members = memberClubRepository.findByClubId(clubId);
         for (MemberClub memberClub : members) {
-            if (memberClub.getMember().getId() == hostId) {
+            if (memberClub.getMember().getId() == memberId) {
                 return new ClubMemberRelationDTO(ClubMemberRelationType.MEMBER);
             }
         }
 
         // 방문자가 가입 신청 상태인지 확인
-        boolean isApplicant = !clubApplicationRepository.findByMemberIdAndClubId(hostId, clubId).isEmpty();
+        boolean isApplicant = !clubApplicationRepository.findByMemberIdAndClubId(memberId, clubId).isEmpty();
         if (isApplicant) {
             return new ClubMemberRelationDTO(ClubMemberRelationType.APPLICANT);
         }

@@ -31,12 +31,12 @@ public class ClubController {
             @RequestBody ClubRequest request,
             HttpServletRequest httpRequest) {
 
-        Long hostId = memberService.getMemberIdFromCookie(httpRequest);
-        if (hostId == null) {
-            throw new IllegalArgumentException("호스트 ID를 찾을 수 없습니다.");
+        Long memberId = memberService.getMemberIdFromCookie(httpRequest);
+        if (memberId == null) {
+            throw new IllegalArgumentException("사용자의 ID를 찾을 수 없습니다.");
         }
 
-        clubService.createClub(request, hostId);
+        clubService.createClub(request, memberId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
