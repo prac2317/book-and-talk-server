@@ -26,7 +26,7 @@ public class FavoriteClubController {
     public ResponseEntity<ApiResponse> addFavoriteClub(
             HttpServletRequest request,
             @RequestBody FavoriteClubRequest favoriteClubRequest) {
-        Long memberId = memberService.getHostIdFromCookie(request);  // Extract memberId from cookie
+        Long memberId = memberService.getMemberIdFromCookie(request);  // Extract memberId from cookie
         favoriteClubService.addFavoriteClub(memberId, favoriteClubRequest.getClubId());
         return ResponseEntity.ok(new ApiResponse("클럽이 즐겨찾기에 추가되었습니다."));
     }
@@ -35,14 +35,14 @@ public class FavoriteClubController {
     public ResponseEntity<ApiResponse> removeFavoriteClub(
             @PathVariable Long clubId,
             HttpServletRequest request) {
-        Long memberId = memberService.getHostIdFromCookie(request);  // Extract memberId from cookie
+        Long memberId = memberService.getMemberIdFromCookie(request);  // Extract memberId from cookie
         favoriteClubService.removeFavoriteClub(memberId, clubId);
         return ResponseEntity.ok(new ApiResponse("클럽이 즐겨찾기에서 삭제되었습니다."));
     }
 
     @GetMapping
     public ResponseEntity<ClubResponseDTO> getFavoriteClubs(HttpServletRequest request) {
-        Long memberId = memberService.getHostIdFromCookie(request);  // Extract memberId from cookie
+        Long memberId = memberService.getMemberIdFromCookie(request);  // Extract memberId from cookie
         List<FavoriteClubResponse> favorites = favoriteClubService.getFavoriteClubs(memberId);
         List<ClubListItemDTO> clubListItems = favorites.stream()
                 .map(FavoriteClubResponse::toClubListItemDTO)
@@ -55,7 +55,7 @@ public class FavoriteClubController {
     public ResponseEntity<ClubFavoriteRelationResponse> isFavoriteClub(
             HttpServletRequest request,
             @RequestParam Long clubId) {
-        Long memberId = getHostIdFromCookie(request);
+        Long memberId = getMemberIdFromCookie(request);
         boolean exists = favoriteClubService.isFavoriteClub(memberId, clubId);
 
         ClubFavoriteRelationResponse response = new ClubFavoriteRelationResponse();
@@ -63,18 +63,18 @@ public class FavoriteClubController {
         return ResponseEntity.ok(response);
     }
 
-    private Long getHostIdFromCookie(HttpServletRequest request) {
+    public Long getMemberIdFromCookie(HttpServletRequest request) {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if ("hostId".equals(cookie.getName())) {
+                if ("memberId".equals(cookie.getName())) {
                     try {
                         return Long.parseLong(cookie.getValue());
                     } catch (NumberFormatException e) {
-                        throw new IllegalArgumentException("유효하지 않은 hostId 쿠키 값입니다.");
+                        throw new IllegalArgumentException("유효하지 않은 memberId 쿠키 값입니다.");
                     }
                 }
             }
         }
-        throw new IllegalArgumentException("hostId 쿠키가 존재하지 않습니다.");
+        throw new IllegalArgumentException("memberId 쿠키가 존재하지 않습니다.");
     }
 }
