@@ -1,5 +1,6 @@
 package com.talk.book.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +19,9 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 
 @Configuration
 public class SecurityConfig {
+
+    @Value("${app.client.url}")
+    private String clientUrl;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -48,8 +52,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of("https://book-and-talk-client-git-deploy-sjs-projects-c78fe08f.vercel.app"));
-//        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOriginPatterns(List.of(clientUrl));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setMaxAge(3600L);
