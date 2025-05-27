@@ -66,9 +66,16 @@ public class MemberService implements UserDetailsService {
 
 
     public Long getMemberIdFromCookie(HttpServletRequest request) {
-        UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        UserDetails user;
 
         //Todo: 예외 수정하기
+        try {
+            user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } catch (Exception e) {
+            throw new ClassCastException("존재하지 않는 사용자입니다.");
+        }
+
         if (user != null) {
             Member member = memberRepository.findByEmail(user.getUsername()).orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다."));
             return member.getId();
