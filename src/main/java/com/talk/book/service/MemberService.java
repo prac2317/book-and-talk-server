@@ -7,18 +7,29 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 //import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+public class MemberService implements UserDetailsService {
     private final MemberRepository memberRepository;
     private final HttpServletResponse response;
-//    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public Member signup(String email, String nickname, String password) {
         if (memberRepository.findByEmail(email).isPresent()) {
@@ -27,7 +38,7 @@ public class MemberService {
         Member member = new Member();
         member.setEmail(email);
         member.setNickname(nickname);
-//        member.setPassword(passwordEncoder.encode(password));
+        member.setPassword(passwordEncoder.encode(password));
         member.setPassword(password);
         return memberRepository.save(member);
     }
@@ -36,9 +47,9 @@ public class MemberService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("이메일을 찾을 수 없습니다."));
 
-//        if (!passwordEncoder.matches(password, member.getPassword())) {
-//            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-//        }
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
 
         ResponseCookie cookie = ResponseCookie.from("memberId", String.valueOf(member.getId()))
                 .httpOnly(true)
@@ -55,18 +66,24 @@ public class MemberService {
 
 
     public Long getMemberIdFromCookie(HttpServletRequest request) {
+        UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("memberId".equals(cookie.getName())) {
-                    try {
-                        return Long.parseLong(cookie.getValue());
-                    } catch (NumberFormatException e) {
-                        throw new IllegalArgumentException("유효하지 않은 memberId 쿠키 값입니다.");
-                    }
-                }
-            }
+        //Todo: 예외 수정하기
+        if (user != null) {
+            Member member = memberRepository.findByEmail(user.getUsername()).orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다."));
+            return member.getId();
+        } else {
+            throw new RuntimeException("존재하지 않는 사용자입니다.");
         }
-        throw new IllegalArgumentException("memberId 쿠키가 존재하지 않습니다.");
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자가 존재하지 않습니다."));
+        return User.builder()
+                .username(member.getEmail())
+                .password(member.getPassword())
+                .build();
     }
 }
