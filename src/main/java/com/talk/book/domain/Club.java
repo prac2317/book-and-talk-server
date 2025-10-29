@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import org.locationtech.jts.geom.Point;
 
 @Entity
 @NoArgsConstructor
@@ -59,11 +60,14 @@ public class Club {
     @Column(nullable = false)
     private String address;
 
-    @Column(nullable = false)
+    @Column
     private String latitude;
 
-    @Column(nullable = false)
+    @Column
     private String longitude;
+
+    @Column(columnDefinition = "geometry(Point,4326)", nullable = false)
+    private Point location;
 
     @Column(nullable = false, updatable = false)
     @Builder.Default

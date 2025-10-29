@@ -23,8 +23,8 @@ public class ClubRequest {
     private String isbn13;
 
     private String address;
-    private String latitude;
-    private String longitude;
+    private Double latitude;
+    private Double longitude;
 
     private String clubImage;
 }

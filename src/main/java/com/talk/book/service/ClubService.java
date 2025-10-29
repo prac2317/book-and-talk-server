@@ -5,6 +5,9 @@ import com.talk.book.dto.*;
 import com.talk.book.enumerate.ClubMemberRelationType;
 import com.talk.book.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,6 +23,7 @@ public class ClubService {
     private final ClubApplicationRepository clubApplicationRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final MemberChatRoomRepository memberChatRoomRepository;
+    private final GeometryFactory geometryFactory;
 
     public Club createClub(ClubRequest request, Long memberId) {
         Member host = memberRepository.findById(memberId)
@@ -28,6 +32,9 @@ public class ClubService {
         if (request.getMaxParticipants() < 1) {
             throw new IllegalArgumentException("최대 참가자는 1명 이상이어야 합니다.");
         }
+
+        Point clubLocation = geometryFactory.createPoint(
+                new Coordinate(request.getLongitude(), request.getLatitude()));
 
         Club club = Club.builder()
                 .host(host)
@@ -41,8 +48,7 @@ public class ClubService {
                 .status("모집중")
                 .clubDescription(request.getClubDescription())
                 .address(request.getAddress())
-                .latitude(request.getLatitude())
-                .longitude(request.getLongitude())
+                .location(clubLocation)
                 .createdAt(LocalDateTime.now())
                 .clubImage(request.getClubImage())
                 .build();
