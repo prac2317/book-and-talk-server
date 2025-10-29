@@ -31,6 +31,17 @@ public class ClubController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/nearby")
+    public ResponseEntity<ClubListNearbyResponseDTO> getNearbyClubs(
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        ClubListNearbyResponseDTO response = clubService.getNearbyClubs(longitude, latitude, page, size);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> createClub(
             @RequestPart("request") ClubRequest request,

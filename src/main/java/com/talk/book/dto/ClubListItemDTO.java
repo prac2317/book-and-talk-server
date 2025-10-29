@@ -19,5 +19,7 @@ public class ClubListItemDTO {
     private String status;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime startDate;
+    private Double latitude;
+    private Double longitude;
     private String clubImage;
 }

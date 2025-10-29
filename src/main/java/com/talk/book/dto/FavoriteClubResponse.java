@@ -1,6 +1,7 @@
 package com.talk.book.dto;
 
 import com.talk.book.domain.FavoriteClub;
+import com.talk.book.repository.ClubRepository;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,18 +21,7 @@ public class FavoriteClubResponse {
     private LocalDateTime startDate;
     private String clubImage;
 
-    public static ClubListItemDTO toClubListItemDTO(FavoriteClubResponse response) {
-        return new ClubListItemDTO(
-                response.getClubId(),
-                response.getBookTitle(),
-                response.getName(),
-                response.getCurrentParticipants(),
-                response.getMaxParticipants(),
-                response.getStatus(),
-                response.getStartDate(),
-                response.getClubImage()
-        );
-    }
+    private ClubRepository clubRepository;
 
     public static List<FavoriteClubResponse> from(List<FavoriteClub> favorites) {
         return favorites.stream()

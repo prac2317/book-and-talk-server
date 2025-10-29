@@ -32,9 +32,6 @@ public class Club {
     @Column(length = 255, nullable = false)
     private String name;
 
-//    @Column(length = 255, nullable = false)
-//    private String location;
-
     @Column(nullable = false)
     private int maxParticipants;
 
@@ -60,13 +57,7 @@ public class Club {
     @Column(nullable = false)
     private String address;
 
-    @Column
-    private String latitude;
-
-    @Column
-    private String longitude;
-
-    @Column(columnDefinition = "geometry(Point,4326)", nullable = false)
+    @Column(columnDefinition = "geography(Point,4326)", nullable = false)
     private Point location;
 
     @Column(nullable = false, updatable = false)

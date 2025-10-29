@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -130,6 +133,36 @@ public class ClubService {
         return new ClubResponseDTO(clubListItemDTOs.size(), clubListItemDTOs);
     }
 
+    public ClubListNearbyResponseDTO getNearbyClubs(
+            double longitude,
+            double latitude,
+            int page,
+            int size
+    ) {
+        double radiusInMeters = 5000.0;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Club> clubPage = clubRepository.findNearbyClubs(
+                latitude,
+                longitude,
+                radiusInMeters,
+                pageable
+        );
+
+        List<ClubListItemDTO> clubListItemDTOs = clubPage.getContent().stream()
+                .map(this::convertToListItemDTO)
+                .collect(Collectors.toList());
+
+        // 응답 생성 (totalCount, totalPages 포함)
+        return ClubListNearbyResponseDTO.builder()
+                .totalCount((int) clubPage.getTotalElements())
+                .totalPages(clubPage.getTotalPages())
+                .data(clubListItemDTOs)
+                .build();
+    }
+
+
     public ClubDTO getClubDetailById(Long clubId) {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("클럽을 찾을 수 없습니다."));
@@ -163,6 +196,11 @@ public class ClubService {
     }
 
     public ClubListItemDTO convertToListItemDTO(Club club) {
+
+        Point location = club.getLocation();
+        double longitude = location.getX();
+        double latitude = location.getY();
+
         return new ClubListItemDTO(
                 club.getId(),
                 club.getBookTitle(),
@@ -171,6 +209,8 @@ public class ClubService {
                 club.getMaxParticipants(),
                 club.getStatus(),
                 club.getStartDate(),
+                latitude,
+                longitude,
                 club.getClubImage()
         );
     }

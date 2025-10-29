@@ -1,12 +1,15 @@
 package com.talk.book.controller;
 
 
+import com.talk.book.domain.Club;
 import com.talk.book.dto.*;
+import com.talk.book.repository.ClubRepository;
 import com.talk.book.security.ApiResponse;
 import com.talk.book.service.FavoriteClubService;
 import com.talk.book.service.MemberService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +24,7 @@ public class FavoriteClubController {
 
     private final FavoriteClubService favoriteClubService;
     private final MemberService memberService;
+    private final ClubRepository clubRepository;
 
     @PostMapping
     public ResponseEntity<ApiResponse> addFavoriteClub(
@@ -45,10 +49,30 @@ public class FavoriteClubController {
         Long memberId = memberService.getMemberIdFromCookie(request);  // Extract memberId from cookie
         List<FavoriteClubResponse> favorites = favoriteClubService.getFavoriteClubs(memberId);
         List<ClubListItemDTO> clubListItems = favorites.stream()
-                .map(FavoriteClubResponse::toClubListItemDTO)
+                .map(this::toClubListItemDTO)
                 .collect(Collectors.toList());
         ClubResponseDTO response = new ClubResponseDTO(clubListItems.size(), clubListItems);
         return ResponseEntity.ok(response);
+    }
+
+    public ClubListItemDTO toClubListItemDTO(FavoriteClubResponse response) {
+
+        Club club = clubRepository.findById(response.getClubId()).orElseThrow(()-> new RuntimeException("해당 클럽이 존재하지 않습니다."));
+        double longitude = club.getLocation().getX();
+        double latitude = club.getLocation().getY();
+
+        return new ClubListItemDTO(
+                response.getClubId(),
+                response.getBookTitle(),
+                response.getName(),
+                response.getCurrentParticipants(),
+                response.getMaxParticipants(),
+                response.getStatus(),
+                response.getStartDate(),
+                longitude,
+                latitude,
+                response.getClubImage()
+        );
     }
 
     @GetMapping("/relation")
