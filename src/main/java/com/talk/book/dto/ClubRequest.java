@@ -21,5 +21,11 @@ public class ClubRequest {
 
     private int duration;
     private String isbn13;
+
+    private String address;
+    private String latitude;
+    private String longitude;
+
+    private String clubImage;
 }
 

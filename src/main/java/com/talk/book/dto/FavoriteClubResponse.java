@@ -18,6 +18,7 @@ public class FavoriteClubResponse {
     private int maxParticipants;
     private String status;
     private LocalDateTime startDate;
+    private String clubImage;
 
     public static ClubListItemDTO toClubListItemDTO(FavoriteClubResponse response) {
         return new ClubListItemDTO(
@@ -27,7 +28,8 @@ public class FavoriteClubResponse {
                 response.getCurrentParticipants(),
                 response.getMaxParticipants(),
                 response.getStatus(),
-                response.getStartDate()
+                response.getStartDate(),
+                response.getClubImage()
         );
     }
 
@@ -41,6 +43,7 @@ public class FavoriteClubResponse {
                         .maxParticipants(fav.getClub().getMaxParticipants())
                         .status(fav.getClub().getStatus())
                         .startDate(fav.getClub().getStartDate())
+                        .clubImage(fav.getClub().getClubImage())
                         .build())
                 .collect(Collectors.toList());
     }

@@ -40,8 +40,11 @@ public class ClubService {
                 .currentParticipant(1)
                 .status("모집중")
                 .clubDescription(request.getClubDescription())
-                .clubImage("")
+                .address(request.getAddress())
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
                 .createdAt(LocalDateTime.now())
+                .clubImage(request.getClubImage())
                 .build();
         Club savedClub = clubRepository.save(club);
 
@@ -140,7 +143,11 @@ public class ClubService {
                 club.getStatus(),
                 club.getClubDescription(),
                 club.getIsbn13(),
-                club.getCreatedAt()
+                club.getCreatedAt(),
+                club.getAddress(),
+                club.getLatitude(),
+                club.getLongitude(),
+                club.getClubImage()
         );
     }
 
@@ -152,7 +159,8 @@ public class ClubService {
                 club.getCurrentParticipant(),
                 club.getMaxParticipants(),
                 club.getStatus(),
-                club.getStartDate()
+                club.getStartDate(),
+                club.getClubImage()
         );
     }
 

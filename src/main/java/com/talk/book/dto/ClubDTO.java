@@ -22,5 +22,9 @@ public class ClubDTO {
     private String clubDescription;
     private String isbn13;
     private LocalDateTime createdAt;
+    private String address;
+    private String latitude;
+    private String longitude;
+    private String clubImage;
 }
 

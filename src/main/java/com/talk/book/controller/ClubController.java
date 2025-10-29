@@ -6,12 +6,16 @@ import com.talk.book.dto.*;
 
 import com.talk.book.service.ClubService;
 import com.talk.book.service.MemberService;
+import com.talk.book.service.S3Service;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/clubs")
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class ClubController {
     private final ClubService clubService;
     private final MemberService memberService;
+    private final S3Service s3Service;
 
     @GetMapping
     public ResponseEntity<ClubResponseDTO> getClubsByIsbn(@RequestParam String isbn13) {
@@ -26,15 +31,19 @@ public class ClubController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> createClub(
-            @RequestBody ClubRequest request,
-            HttpServletRequest httpRequest) {
+            @RequestPart("request") ClubRequest request,
+            @RequestPart("image") MultipartFile image,
+            HttpServletRequest httpRequest) throws IOException {
 
         Long memberId = memberService.getMemberIdFromCookie(httpRequest);
         if (memberId == null) {
             throw new IllegalArgumentException("사용자의 ID를 찾을 수 없습니다.");
         }
+
+        String imageUrl = s3Service.uploadFile(image, "clubs");
+        request.setClubImage(imageUrl);
 
         clubService.createClub(request, memberId);
         return ResponseEntity.status(HttpStatus.CREATED).build();

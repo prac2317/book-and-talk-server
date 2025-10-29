@@ -53,8 +53,17 @@ public class Club {
     @Column(columnDefinition = "TEXT")
     private String clubDescription;
 
-    @Column(length = 255)
+    @Column(length = 500, name = "club_image")
     private String clubImage;
+
+    @Column(nullable = false)
+    private String address;
+
+    @Column(nullable = false)
+    private String latitude;
+
+    @Column(nullable = false)
+    private String longitude;
 
     @Column(nullable = false, updatable = false)
     @Builder.Default
