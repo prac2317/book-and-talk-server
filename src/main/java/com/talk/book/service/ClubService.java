@@ -138,6 +138,11 @@ public class ClubService {
     }
 
     public ClubDTO convertToDTO(Club club) {
+
+        Point location = club.getLocation();
+        double longitude = location.getX();
+        double latitude = location.getY();
+
         return new ClubDTO(
                 club.getId(),
                 club.getName(),
@@ -151,8 +156,8 @@ public class ClubService {
                 club.getIsbn13(),
                 club.getCreatedAt(),
                 club.getAddress(),
-                club.getLatitude(),
-                club.getLongitude(),
+                longitude,
+                latitude,
                 club.getClubImage()
         );
     }
