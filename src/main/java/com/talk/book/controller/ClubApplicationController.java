@@ -30,8 +30,8 @@ public class ClubApplicationController {
             @RequestBody ApplicationRequestDTO request,
             HttpServletRequest httpRequest
     ) {
-        Long hostId = memberService.getHostIdFromCookie(httpRequest);
-        clubApplicationService.applyToClub(clubId, hostId, request);
+        Long memberId = memberService.getMemberIdFromCookie(httpRequest);
+        clubApplicationService.applyToClub(clubId, memberId, request);
 
         return ResponseEntity.ok("참가 신청 완료");
     }
@@ -41,7 +41,7 @@ public class ClubApplicationController {
             @PathVariable Long clubId,
             HttpServletRequest httpRequest
     ) {
-        Long memberId = memberService.getHostIdFromCookie(httpRequest);
+        Long memberId = memberService.getMemberIdFromCookie(httpRequest);
         ApplicantListDTO response = clubApplicationService.getApplicants(clubId, memberId);
 
         return ResponseEntity.ok(response);
@@ -71,7 +71,7 @@ public class ClubApplicationController {
             System.out.println(cookie.getName());
             System.out.println(cookie.getValue());
         }
-        Long memberId = memberService.getHostIdFromCookie(httpRequest);
+        Long memberId = memberService.getMemberIdFromCookie(httpRequest);
         clubApplicationService.cancelApplication(clubId, memberId);
 
         return ResponseEntity.ok("참가 신청 취소 완료");

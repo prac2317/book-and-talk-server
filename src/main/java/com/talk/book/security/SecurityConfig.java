@@ -1,10 +1,15 @@
 package com.talk.book.security;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,17 +22,24 @@ import java.util.List;
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final AuthenticationConfiguration config;
+
+    @Value("${app.client.url}")
+    private String clientUrl;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public WebSecurityCustomizer configure() {
-        return (web) -> web.ignoring()
-                .requestMatchers(toH2Console());
-    }
+//    @Bean
+//    public WebSecurityCustomizer configure() {
+//        return (web) -> web.ignoring()
+//                .requestMatchers(toH2Console());
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -39,16 +51,18 @@ public class SecurityConfig {
                                 .requestMatchers("/api/**").permitAll()
 //                        .anyRequest().authenticated()
                 )
-                .formLogin(AbstractHttpConfigurer::disable);
+                .httpBasic(AbstractHttpConfigurer::disable)
+//                .logout(logout -> logout)
+        ;
 
         return http.build();
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of("https://book-and-talk-client-git-deploy-sjs-projects-c78fe08f.vercel.app"));
-//        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOriginPatterns(List.of(clientUrl));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setMaxAge(3600L);
@@ -56,5 +70,10 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager() throws Exception {
+        return config.getAuthenticationManager();
     }
 }

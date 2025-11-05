@@ -5,6 +5,12 @@ import com.talk.book.dto.*;
 import com.talk.book.enumerate.ClubMemberRelationType;
 import com.talk.book.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,14 +26,18 @@ public class ClubService {
     private final ClubApplicationRepository clubApplicationRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final MemberChatRoomRepository memberChatRoomRepository;
+    private final GeometryFactory geometryFactory;
 
-    public Club createClub(ClubRequest request, Long hostId) {
-        Member host = memberRepository.findById(hostId)
+    public Club createClub(ClubRequest request, Long memberId) {
+        Member host = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("호스트를 찾을 수 없습니다."));
 
         if (request.getMaxParticipants() < 1) {
             throw new IllegalArgumentException("최대 참가자는 1명 이상이어야 합니다.");
         }
+
+        Point clubLocation = geometryFactory.createPoint(
+                new Coordinate(request.getLongitude(), request.getLatitude()));
 
         Club club = Club.builder()
                 .host(host)
@@ -40,8 +50,10 @@ public class ClubService {
                 .currentParticipant(1)
                 .status("모집중")
                 .clubDescription(request.getClubDescription())
-                .clubImage("")
+                .address(request.getAddress())
+                .location(clubLocation)
                 .createdAt(LocalDateTime.now())
+                .clubImage(request.getClubImage())
                 .build();
         Club savedClub = clubRepository.save(club);
 
@@ -83,25 +95,25 @@ public class ClubService {
         return new MemberListDTO(memberDTOs);
     }
 
-    public ClubMemberRelationDTO getRelation(Long clubId, Long hostId) {
+    public ClubMemberRelationDTO getRelation(Long clubId, Long memberId) {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("클럽을 찾을 수 없습니다."));
 
         // 방문자가 호스트인지 확인
-        if (club.getHost().getId().equals(hostId)) {
+        if (club.getHost().getId().equals(memberId)) {
             return new ClubMemberRelationDTO(ClubMemberRelationType.HOST);
         }
 
         // 방문자가 클럽의 멤버인지 확인
         List<MemberClub> members = memberClubRepository.findByClubId(clubId);
         for (MemberClub memberClub : members) {
-            if (memberClub.getMember().getId() == hostId) {
+            if (memberClub.getMember().getId() == memberId) {
                 return new ClubMemberRelationDTO(ClubMemberRelationType.MEMBER);
             }
         }
 
         // 방문자가 가입 신청 상태인지 확인
-        boolean isApplicant = !clubApplicationRepository.findByMemberIdAndClubId(hostId, clubId).isEmpty();
+        boolean isApplicant = !clubApplicationRepository.findByMemberIdAndClubId(memberId, clubId).isEmpty();
         if (isApplicant) {
             return new ClubMemberRelationDTO(ClubMemberRelationType.APPLICANT);
         }
@@ -121,6 +133,36 @@ public class ClubService {
         return new ClubResponseDTO(clubListItemDTOs.size(), clubListItemDTOs);
     }
 
+    public ClubListNearbyResponseDTO getNearbyClubs(
+            double longitude,
+            double latitude,
+            int page,
+            int size
+    ) {
+        double radiusInMeters = 5000.0;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Club> clubPage = clubRepository.findNearbyClubs(
+                latitude,
+                longitude,
+                radiusInMeters,
+                pageable
+        );
+
+        List<ClubListItemDTO> clubListItemDTOs = clubPage.getContent().stream()
+                .map(this::convertToListItemDTO)
+                .collect(Collectors.toList());
+
+        // 응답 생성 (totalCount, totalPages 포함)
+        return ClubListNearbyResponseDTO.builder()
+                .totalCount((int) clubPage.getTotalElements())
+                .totalPages(clubPage.getTotalPages())
+                .data(clubListItemDTOs)
+                .build();
+    }
+
+
     public ClubDTO getClubDetailById(Long clubId) {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("클럽을 찾을 수 없습니다."));
@@ -129,6 +171,11 @@ public class ClubService {
     }
 
     public ClubDTO convertToDTO(Club club) {
+
+        Point location = club.getLocation();
+        double longitude = location.getX();
+        double latitude = location.getY();
+
         return new ClubDTO(
                 club.getId(),
                 club.getName(),
@@ -140,11 +187,20 @@ public class ClubService {
                 club.getStatus(),
                 club.getClubDescription(),
                 club.getIsbn13(),
-                club.getCreatedAt()
+                club.getCreatedAt(),
+                club.getAddress(),
+                longitude,
+                latitude,
+                club.getClubImage()
         );
     }
 
     public ClubListItemDTO convertToListItemDTO(Club club) {
+
+        Point location = club.getLocation();
+        double longitude = location.getX();
+        double latitude = location.getY();
+
         return new ClubListItemDTO(
                 club.getId(),
                 club.getBookTitle(),
@@ -152,7 +208,10 @@ public class ClubService {
                 club.getCurrentParticipant(),
                 club.getMaxParticipants(),
                 club.getStatus(),
-                club.getStartDate()
+                club.getStartDate(),
+                latitude,
+                longitude,
+                club.getClubImage()
         );
     }
 

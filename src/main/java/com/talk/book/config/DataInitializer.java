@@ -6,6 +6,7 @@ import com.talk.book.repository.MemberRepository;
 import com.talk.book.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,8 +14,8 @@ import org.springframework.stereotype.Component;
 public class DataInitializer implements CommandLineRunner {
 
     private final MemberRepository memberRepository;
-//    private final ClubRepository clubRepository;
     private final BookService bookService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
@@ -23,7 +24,7 @@ public class DataInitializer implements CommandLineRunner {
             Member member = new Member();
             member.setEmail("email" + Integer.toString(i) + "@gmail.com");
             member.setNickname("nickname" + Integer.toString(i));
-            member.setPassword("password" + Integer.toString(i));
+            member.setPassword(passwordEncoder.encode("password" + Integer.toString(i)));
             Member savedMember = memberRepository.save(member);
 
 //            Club club = new Club();

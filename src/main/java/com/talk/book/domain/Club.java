@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import org.locationtech.jts.geom.Point;
 
 @Entity
 @NoArgsConstructor
@@ -31,9 +32,6 @@ public class Club {
     @Column(length = 255, nullable = false)
     private String name;
 
-//    @Column(length = 255, nullable = false)
-//    private String location;
-
     @Column(nullable = false)
     private int maxParticipants;
 
@@ -53,8 +51,14 @@ public class Club {
     @Column(columnDefinition = "TEXT")
     private String clubDescription;
 
-    @Column(length = 255)
+    @Column(length = 500, name = "club_image")
     private String clubImage;
+
+    @Column(nullable = false)
+    private String address;
+
+    @Column(columnDefinition = "geography(Point,4326)", nullable = false)
+    private Point location;
 
     @Column(nullable = false, updatable = false)
     @Builder.Default

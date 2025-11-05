@@ -39,7 +39,7 @@ public class ChatController {
 
     @GetMapping("/api/v1/chat/chatrooms")
     public ResponseEntity<GetChatRoomsResponse> getChatRooms(HttpServletRequest httpRequest) {
-        Long memberId = memberService.getHostIdFromCookie(httpRequest);
+        Long memberId = memberService.getMemberIdFromCookie(httpRequest);
         GetChatRoomsResponse response = chatService.getChatRooms(memberId);
         return ResponseEntity.ok(response);
     }
