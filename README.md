@@ -4,17 +4,6 @@
 
 개발 기간: 2024.10 ~ 2024.11(이후 지속 개선 중)
 
-## 기술 스택
-
-| 분류 | 기술 |
-|------|------|
-| Framework | Spring Boot, Java |
-| Database | PostgreSQL, PostGIS |
-| ORM | Spring Data JPA, Hibernate Spatial |
-| Authentication | Spring Security |
-| Real-time | WebSocket, STOMP |
-| Storage | AWS S3 |
-
 ## 주요 기능
 
 ### 독서 모임
@@ -29,6 +18,17 @@
 
 ### 실시간 채팅
 모임이 생성될 경우 단체 채팅방이 자동으로 생성됩니다. 참가 신청이 승인될 경우 신청한 사용자는 채팅방에 자동으로 참가합니다. WebSocket, STOMP을 활용했습니다.
+
+## 기술 스택
+
+| 분류 | 기술 |
+|------|------|
+| Framework | Spring Boot, Java |
+| Database | PostgreSQL, PostGIS |
+| ORM | Spring Data JPA, Hibernate Spatial |
+| Authentication | Spring Security |
+| Real-time | WebSocket, STOMP |
+| Storage | AWS S3 |
 
 ## 프로젝트 구조
 
